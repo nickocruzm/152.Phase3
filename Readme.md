@@ -43,8 +43,8 @@ It's possible to add more your custom `*.cpp` files by editing the Makefile. Lis
 
 ## Project Submission 
 
-* Start Date:  5/13/2022
-* Due Date:    6/03/2022
+* Start Date:  7/11/2022
+* Due Date:    7/20/2022
 
 Project submission requires you to commit and push your code to Github after finishing the phase3 project. As the following steps:
 ```sh
