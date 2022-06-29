@@ -20,49 +20,12 @@ Make sure you have the following tools installed and check the version:
 5. gcc -v        (>=4.8)
 6. g++ -v        (>=4.8)
 
-## Clone and Build
-
-Use 'git' to clone the project template and copy your code in phase 2 into this new repository.
-
-```sh
-    git clone <your-repo-link> phase3
-    cd phase3 && make
-```
-
-## Use the template
-
-You can change any files and add additional C/C++ files, but please make sure all files are linked to the final executable file in Makefile. Please don't change the name of 'Makefile' , 'miniL.lex' and 'miniL.y'. After typing make, An executable file 'miniL' is created as your miniL language compiler. Please don't change the output target name 'miniL' also.
-
-You can add additional C++ class definition in the file `lib.h` and implementations in `lib.cpp`.
-
-It's possible to add more your custom `*.cpp` files by editing the Makefile. List them in the `SRC` variable in Makefile. 
-
-`min_c` is the correct implementation of miniL compiler. You can use it to generate more test cases if you need.
-
-`min_run` is the same MIL interpreter in our home page.
-
 ## Project Submission 
 
 * Start Date:  7/11/2022
 * Due Date:    7/20/2022
 
-Project submission requires you to commit and push your code to Github after finishing the phase3 project. As the following steps:
-```sh
-git status # it should be under 'main' branch (otherwise you should switch to 'main' branch by typing 'git checkout main')
-git add .  # add all files under current folder into staged changes
-git commit -m "phase1 submission"  # make a commit for your changes
-git push   # push all local commits to Github, this step may need your username and password of Github
-```
-
-For phase3-part1 submission, please create a new Release, then you can give it a name Part1 to indicate this version is your final version of part1. After creating an release, you can continue pushing new commits and do not need to worry your new commits will influence your part1 grading. For part2 submission, you can just keep your final version of code in your main branch.
-
-![image](https://user-images.githubusercontent.com/6300305/152875849-ed6f8491-bcb9-468e-8fca-626732aa06e6.png)
-![image](https://user-images.githubusercontent.com/6300305/152875944-c2c4df84-e445-4ce3-be75-3e6a342ff8ef.png)
-
-
-Before the deadline, you can create commits and push to Github without any limitation. Please make sure your code under 'main' branch is the last version you wish to submit. After the deadline, please do not push new commits to 'main' branch otherwise it will be considered as a late submission.
-
-![image](https://user-images.githubusercontent.com/6300305/148487911-7bcaa3ac-2c8e-4ee3-9ead-ab908d5e1710.png)
+Submit your project on Elearn. If you are doing the project in a group of two, each group member should submit the project separately. 
 
 ## Academic integrity
 
