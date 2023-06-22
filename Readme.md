@@ -22,8 +22,8 @@ Make sure you have the following tools installed and check the version:
 
 ## Project Submission 
 
-* Start Date:  7/11/2022
-* Due Date:    7/20/2022
+* Start Date:  8/21/2023
+* Due Date:    8/30/2023
 
 Submit your project on Elearn. If you are doing the project in a group of two, each group member should submit the project separately. 
 
