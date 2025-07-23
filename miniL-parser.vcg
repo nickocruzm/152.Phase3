@@ -1,0 +1,46 @@
+graph: {
+	display_edge_labels:	yes
+	priority_phase:	yes
+	port_sharing:	no
+	crossing_weight:	median
+	splines:	yes
+	node: {
+		title:	"0"
+		label:	"state  0\n $accept -> . program $end"
+	}
+	edge: {
+		sourcename:	"0"
+		targetname:	"1"
+		label:	"DIGIT"
+		color:	blue
+		textcolor:	black
+	}
+	edge: {
+		sourcename:	"0"
+		targetname:	"2"
+		label:	"program"
+		color:	green
+		textcolor:	black
+	}
+	node: {
+		title:	"1"
+		label:	"state  1\n program -> DIGIT ."
+	}
+	node: {
+		title:	"2"
+		label:	"state  2\n $accept -> program . $end"
+	}
+	edge: {
+		sourcename:	"2"
+		targetname:	"3"
+		label:	"$end"
+		color:	blue
+		textcolor:	black
+	}
+	node: {
+		title:	"3"
+		label:	"state  3\n $accept -> program $end ."
+	}
+
+
+}
