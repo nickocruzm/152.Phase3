@@ -8,12 +8,12 @@
     int label_count = 0;
     char* new_temp() {
         char* name = (char*) malloc(20);
-        sprintf(name, "_temp%d", temp_count++);
+        sprintf(name, "__temp__%d", temp_count++);
         return name;
     }
     char* new_label() {
         char* label = (char*) malloc(20);
-        sprintf(label, "_label%d", label_count++);
+        sprintf(label, "__label__%d", label_count++);
         return label;
     }
     void yyerror(const char *msg);
@@ -69,9 +69,10 @@ program: functions;
 functions: function
          | functions function;
 
-function: FUNCTION IDENTIFIER SEMICOLON BEGINPARAMS declarations ENDPARAMS BEGINLOCALS declarations ENDLOCALS BEGINBODY statements ENDBODY
-
-        ;
+function: FUNCTION IDENTIFIER SEMICOLON BEGINPARAMS declarations 
+ENDPARAMS BEGINLOCALS declarations ENDLOCALS BEGINBODY statements ENDBODY{
+    printf("func %s\n", $2);
+};
 
 declarations: /* empty */
 
