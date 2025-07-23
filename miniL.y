@@ -69,10 +69,9 @@ program: functions;
 functions: function
          | functions function;
 
-function: FUNCTION IDENTIFIER SEMICOLON BEGINPARAMS declarations 
-ENDPARAMS BEGINLOCALS declarations ENDLOCALS BEGINBODY statements ENDBODY{
-    printf("func %s\n", $2);
-};
+function
+:FUNCTION IDENTIFIER SEMICOLON BEGINPARAMS declarations 
+ENDPARAMS BEGINLOCALS declarations ENDLOCALS BEGINBODY statements ENDBODY;
 
 declarations: /* empty */
 
