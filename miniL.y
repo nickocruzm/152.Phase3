@@ -104,9 +104,14 @@ statement
         printf("= %s, %s\n", $1, $3);
     }
     | IF bool_expr THEN statements ENDIF opt_semi {
-        char* false_label = new_label();
-        printf("?:= %s, %s\n", $2, false_label);
-        printf("%s:\n", false_label);
+        char* true_label = new_label();
+        char* end_label = new_label();
+        printf("?:= %s, %s\n", $2, true_label);
+        // false branch skips to end
+        printf(":= %s\n", end_label);
+        printf("%s:\n", true_label);
+        // true branch statements will go here
+        printf("%s:\n", end_label);
     }
     | IF bool_expr THEN statements ELSE statements ENDIF opt_semi {
         char* else_label = new_label();
