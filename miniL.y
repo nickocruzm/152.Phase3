@@ -45,6 +45,8 @@
 %token TRUE FALSE
 %token ENUM
 
+%type <str_val> statement bool_expr relation_and_expr relation_expr expression multiplicative_expr term var vars
+
 /* Operator precedence and associativity (lowest to highest) */
 %right ASSIGN
 %left OR
