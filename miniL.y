@@ -45,7 +45,7 @@
 %token TRUE FALSE
 %token ENUM
 
-%type <str_val> statement bool_expr relation_and_expr relation_expr expression multiplicative_expr term var vars
+%type <str_val> statement bool_expr relation_and_expr relation_expr expression multiplicative_expr term var vars expressions
 %type <int_val> comp
 /* Operator precedence and associativity (lowest to highest) */
 %right ASSIGN
@@ -104,16 +104,15 @@ statement
         printf("= %s, %s\n", $1, $3);
     }
     | IF bool_expr THEN statements ENDIF opt_semi {
-        char* end_label = new_label();
-        printf("?:= %s, %s\n", $2, end_label);
-        printf("%s:\n", end_label);
+        char* false_label = new_label();
+        printf("?:= %s, %s\n", $2, false_label);
+        printf("%s:\n", false_label);
     }
     | IF bool_expr THEN statements ELSE statements ENDIF opt_semi {
         char* else_label = new_label();
         char* end_label = new_label();
         printf("?:= %s, %s\n", $2, else_label);
         // true branch (statements)
-        // after true branch, unconditional jump to end_label
         printf(":= %s\n", end_label);
         printf("%s:\n", else_label);
         // else branch (statements)
@@ -295,8 +294,11 @@ term
         $$ = temp;
     }
     | IDENTIFIER L_PAREN expressions R_PAREN {
-        // function call, not handled
-        $$ = strdup($1);
+        char* temp = new_temp();
+        // emit param for each expression in $3
+        // $3 is a comma-separated list of expressions, but we have printed params already in expressions rule
+        printf("call %s, %s\n", $1, temp);
+        $$ = temp;
     }
     ;
 
@@ -311,11 +313,21 @@ var
     }
     ;
 
-expressions: /* empty */
-           | expression
-           | expressions COMMA expression
-
-           ;
+expressions
+    : /* empty */ {
+        // empty argument list, no params
+        $$ = NULL;
+    }
+    | expression {
+        printf("param %s\n", $1);
+        $$ = $1;
+    }
+    | expressions COMMA expression {
+        // $1 may be NULL or last expression, but we only need to print param for $3
+        printf("param %s\n", $3);
+        $$ = $3;
+    }
+    ;
 
 %%
 
