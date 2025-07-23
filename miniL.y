@@ -46,7 +46,7 @@
 %token ENUM
 
 %type <str_val> statement bool_expr relation_and_expr relation_expr expression multiplicative_expr term var vars
-
+%type <int_val> comp
 /* Operator precedence and associativity (lowest to highest) */
 %right ASSIGN
 %left OR
@@ -232,12 +232,12 @@ relation_expr
     }
     ;
 
-comp: EQ
-    | NEQ
-    | LT
-    | LTE
-    | GT
-    | GTE
+comp: EQ   { $$ = $1; }
+    | NEQ  { $$ = $1; }
+    | LT   { $$ = $1; }
+    | LTE  { $$ = $1; }
+    | GT   { $$ = $1; }
+    | GTE  { $$ = $1; }
     ;
 
 expression
