@@ -7,12 +7,12 @@
     int temp_count = 0;
     int label_count = 0;
     char* new_temp() {
-        char* name = malloc(20);
+        char* name = (char*) malloc(20);
         sprintf(name, "_temp%d", temp_count++);
         return name;
     }
     char* new_label() {
-        char* label = malloc(20);
+        char* label = (char*) malloc(20);
         sprintf(label, "_label%d", label_count++);
         return label;
     }
@@ -282,7 +282,7 @@ term
         $$ = $1;
     }
     | NUMBER {
-        char* temp = malloc(20);
+        char* temp = (char*) malloc(20);
         sprintf(temp, "%d", $1);
         $$ = temp;
     }
