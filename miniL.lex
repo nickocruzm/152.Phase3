@@ -3,7 +3,7 @@
     #include <stdio.h>
     #include <stdlib.h>
     #include <string.h>
-    #include "miniL-parser.h"
+    #include "miniL-parser.hpp"
 
     int line = 1;
     int column = 1;
