@@ -30,44 +30,36 @@
 
 // %locations
 
-/* Token declarations */
-// %token <str_val> IDENTIFIER
-// %token <int_val> NUMBER
-%start prog_start
-%token FUNCTION BEGINPARAMS ENDPARAMS BEGINLOCALS ENDLOCALS BEGINBODY ENDBODY INTEGER ENUM ARRAY OF IF THEN ENDIF ELSE WHILE FOR DO BEGINLOOP ENDLOOP CONTINUE READ WRITE TRUE FALSE SEMICOLON COLON COMMA L_PAREN R_PAREN L_SQUARE_BRACKET R_SQUARE_BRACKET ASSIGN RETURN
+%token FUNCTION BEGINPARAMS ENDPARAMS BEGINLOCALS ENDLOCALS BEGINBODY ENDBODY
+%token INTEGER ENUM ARRAY OF IF THEN ENDIF ELSE WHILE FOR DO BEGINLOOP ENDLOOP CONTINUE
+%token READ WRITE RETURN
+%token ASSIGN SEMICOLON COLON COMMA
+%token L_PAREN R_PAREN L_SQUARE_BRACKET R_SQUARE_BRACKET
+%token PLUS MINUS MULT DIV MOD
+%token <num_val> EQ NEQ LT LTE GT GTE
+%token AND OR NOT
+%token TRUE FALSE
 %token <id_val> IDENT
 %token <num_val> NUMBER
+%type <num_val> comp
+%type <id_val> vars
+%type <id_val> statement bool_expr relation_and_expr relation_expr expression 
+multiplicative_expr var term expressions
+%type <id_val> term
+%type <id_val> var
+
+
+// /* Operator precedence and associativity (lowest to highest) */
 %right ASSIGN
 %left OR
 %left AND
 %right NOT
-%left LT LTE GT GTE EQ NEQ
-%left ADD SUB
+%left EQ NEQ LT LTE GT GTE
+%left PLUS MINUS
 %left MULT DIV MOD
-
-// %token INTEGER ARRAY OF IF THEN ELSE ENDIF WHILE DO BEGINLOOP ENDLOOP
-// %token CONTINUE READ WRITE FOREACH IN RETURN
-// %token ASSIGN SEMICOLON COLON COMMA
-// %token L_PAREN R_PAREN L_SQUARE_BRACKET R_SQUARE_BRACKET
-// %token PLUS MINUS MULT DIV MOD
-// %token <int_val> EQ NEQ LT LTE GT GTE
-// %token AND OR NOT
-// %token TRUE FALSE
-// %token ENUM
-
-// %type <str_val> statement bool_expr relation_and_expr relation_expr expression multiplicative_expr term var vars expressions
-// %type <int_val> comp
-// /* Operator precedence and associativity (lowest to highest) */
-// %right ASSIGN
-// %left OR
-// %left AND
-// %right NOT
-// %left EQ NEQ LT LTE GT GTE
-// %left PLUS MINUS
-// %left MULT DIV MOD
-// %right UMINUS
-// %left L_SQUARE_BRACKET
-// %left L_PAREN
+%right UMINUS
+%left L_SQUARE_BRACKET
+%left L_PAREN
 
 /* Start symbol */
 // %start program
@@ -100,8 +92,8 @@ identifiers: ident
            | ident COMMA identifiers
            ;
 
-enum_list: IDENTIFIER
-         | enum_list COMMA IDENTIFIER
+enum_list: ident
+         | enum_list COMMA ident
          ;
 
 statements: statement SEMICOLON
@@ -311,7 +303,7 @@ term
         printf("uminus %s, %s\n", temp, $2);
         $$ = temp;
     }
-    | IDENTIFIER L_PAREN expressions R_PAREN {
+    | ident L_PAREN expressions R_PAREN {
         char* temp = new_temp();
         // emit param for each expression in $3
         // $3 is a comma-separated list of expressions, but we have printed params already in expressions rule
@@ -321,10 +313,10 @@ term
     ;
 
 var
-    : IDENTIFIER {
+    : ident {
         $$ = strdup($1);
     }
-    | IDENTIFIER L_SQUARE_BRACKET expression R_SQUARE_BRACKET {
+    | ident L_SQUARE_BRACKET expression R_SQUARE_BRACKET {
         char* temp = new_temp();
         printf("=[] %s, %s, %s\n", temp, $1, $3);
         $$ = temp;
@@ -354,7 +346,7 @@ int main(int argc, char **argv) {
     if(argc > 1){
         yyin = fopen(argv[1], "r");
         if(yyin == NULL){
-            printf("syntax %s filename", argv[0]
+            printf("syntax %s filename\n", argv[0]
         }
     }
     yyparse();
@@ -364,3 +356,6 @@ int main(int argc, char **argv) {
 void yyerror(const char *msg){
     printf("Error: Line %d, position %d: %s \n", num_lines, num_column, msg);
 }
+ident
+    : IDENT
+    ;
