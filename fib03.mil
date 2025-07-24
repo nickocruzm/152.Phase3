@@ -1,0 +1,25 @@
+?? __temp__0, k, 0
+ret 0
+?? __temp__1, k, 1
+ret 1
+- __temp__2, k, 1
+param __temp__2
+call fibonacci, __temp__3
+- __temp__4, k, 2
+param __temp__4
+call fibonacci, __temp__5
++ __temp__6, __temp__3, __temp__5
+ret __temp__6
+?:= __temp__1, __label__0
+:= __label__1
+__label__0:
+__label__1:
+?:= __temp__0, __label__2
+:= __label__3
+__label__2:
+__label__3:
+.< n
+param n
+call fibonacci, __temp__7
+= fib_n, __temp__7
+> fib_n

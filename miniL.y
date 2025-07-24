@@ -2,81 +2,91 @@
     // Prologue
     #include <stdio.h>
     #include <stdlib.h>
-    #include <string.h>
 
-    int temp_count = 0;
-    int label_count = 0;
-    char* new_temp() {
-        char* name = (char*) malloc(20);
-        sprintf(name, "__temp__%d", temp_count++);
-        return name;
-    }
-    char* new_label() {
-        char* label = (char*) malloc(20);
-        sprintf(label, "__label__%d", label_count++);
-        return label;
-    }
+    // int temp_count = 0;
+    // int label_count = 0;
+    // char* new_temp() {
+    //     char* name = (char*) malloc(20);
+    //     sprintf(name, "__temp__%d", temp_count++);
+    //     return name;
+    // }
+    // char* new_label() {
+    //     char* label = (char*) malloc(20);
+    //     sprintf(label, "__label__%d", label_count++);
+    //     return label;
+    // }
     void yyerror(const char *msg);
-    extern int yylex();
-    extern int yylineno;
-    extern char* yytext;
-
+    extern int num_lines;
+    extern int num_column;
+    FILE *yyin;
 %}
 
+%error-verbose
 %union{
-    char* str_val;
-    int int_val;
+    char* id_val;
+    int num_val;
 }
 
-%error-verbose
-%locations
+
+// %locations
 
 /* Token declarations */
-%token <str_val> IDENTIFIER
-%token <int_val> NUMBER
-%token FUNCTION BEGINPARAMS ENDPARAMS BEGINLOCALS ENDLOCALS BEGINBODY ENDBODY
-%token INTEGER ARRAY OF IF THEN ELSE ENDIF WHILE DO BEGINLOOP ENDLOOP
-%token CONTINUE READ WRITE FOREACH IN RETURN
-%token ASSIGN SEMICOLON COLON COMMA
-%token L_PAREN R_PAREN L_SQUARE_BRACKET R_SQUARE_BRACKET
-%token PLUS MINUS MULT DIV MOD
-%token <int_val> EQ NEQ LT LTE GT GTE
-%token AND OR NOT
-%token TRUE FALSE
-%token ENUM
-
-%type <str_val> statement bool_expr relation_and_expr relation_expr expression multiplicative_expr term var vars expressions
-%type <int_val> comp
-/* Operator precedence and associativity (lowest to highest) */
+// %token <str_val> IDENTIFIER
+// %token <int_val> NUMBER
+%start prog_start
+%token FUNCTION BEGINPARAMS ENDPARAMS BEGINLOCALS ENDLOCALS BEGINBODY ENDBODY INTEGER ENUM ARRAY OF IF THEN ENDIF ELSE WHILE FOR DO BEGINLOOP ENDLOOP CONTINUE READ WRITE TRUE FALSE SEMICOLON COLON COMMA L_PAREN R_PAREN L_SQUARE_BRACKET R_SQUARE_BRACKET ASSIGN RETURN
+%token <id_val> IDENT
+%token <num_val> NUMBER
 %right ASSIGN
 %left OR
 %left AND
 %right NOT
-%left EQ NEQ LT LTE GT GTE
-%left PLUS MINUS
+%left LT LTE GT GTE EQ NEQ
+%left ADD SUB
 %left MULT DIV MOD
-%right UMINUS
-%left L_SQUARE_BRACKET
-%left L_PAREN
+
+// %token INTEGER ARRAY OF IF THEN ELSE ENDIF WHILE DO BEGINLOOP ENDLOOP
+// %token CONTINUE READ WRITE FOREACH IN RETURN
+// %token ASSIGN SEMICOLON COLON COMMA
+// %token L_PAREN R_PAREN L_SQUARE_BRACKET R_SQUARE_BRACKET
+// %token PLUS MINUS MULT DIV MOD
+// %token <int_val> EQ NEQ LT LTE GT GTE
+// %token AND OR NOT
+// %token TRUE FALSE
+// %token ENUM
+
+// %type <str_val> statement bool_expr relation_and_expr relation_expr expression multiplicative_expr term var vars expressions
+// %type <int_val> comp
+// /* Operator precedence and associativity (lowest to highest) */
+// %right ASSIGN
+// %left OR
+// %left AND
+// %right NOT
+// %left EQ NEQ LT LTE GT GTE
+// %left PLUS MINUS
+// %left MULT DIV MOD
+// %right UMINUS
+// %left L_SQUARE_BRACKET
+// %left L_PAREN
 
 /* Start symbol */
-%start program
+// %start program
 
 %%
 
-program: functions;
+prog_start: functions;
 
-functions: function
-         | functions function;
+functions: /*empty*/
+        | function functions;
 
-function
-:FUNCTION IDENTIFIER SEMICOLON BEGINPARAMS declarations 
+// functions: function
+//          | functions function;
+
+function: FUNCTION ident SEMICOLON BEGINPARAMS declarations 
 ENDPARAMS BEGINLOCALS declarations ENDLOCALS BEGINBODY statements ENDBODY;
 
 declarations: /* empty */
-
-            | declarations declaration
-
+            | declaration SEMICOLON declarations
             ;
 
 declaration: identifiers COLON INTEGER SEMICOLON
@@ -86,24 +96,24 @@ declaration: identifiers COLON INTEGER SEMICOLON
 
            ;
 
-identifiers: IDENTIFIER
-           | identifiers COMMA IDENTIFIER
+identifiers: ident 
+           | ident COMMA identifiers
            ;
 
 enum_list: IDENTIFIER
          | enum_list COMMA IDENTIFIER
          ;
 
-statements: /* empty */
-
-          | statements statement
+statements: statement SEMICOLON
+          | statement SEMICOLON statements
           ;
 
-statement
-    : var ASSIGN expression SEMICOLON {
+statement: var ASSIGN expression
+    {
         printf("= %s, %s\n", $1, $3);
     }
-    | IF bool_expr THEN statements ENDIF opt_semi {
+    | IF bool_expr THEN statements ENDIF
+    {
         char* true_label = new_label();
         char* end_label = new_label();
         printf("?:= %s, %s\n", $2, true_label);
@@ -113,7 +123,8 @@ statement
         // true branch statements will go here
         printf("%s:\n", end_label);
     }
-    | IF bool_expr THEN statements ELSE statements ENDIF opt_semi {
+    | IF bool_expr THEN statements ELSE statements ENDIF
+    {
         char* else_label = new_label();
         char* end_label = new_label();
         printf("?:= %s, %s\n", $2, else_label);
@@ -123,7 +134,8 @@ statement
         // else branch (statements)
         printf("%s:\n", end_label);
     }
-    | WHILE bool_expr BEGINLOOP statements ENDLOOP opt_semi {
+    | WHILE bool_expr BEGINLOOP statements ENDLOOP
+    {
         char* start_label = new_label();
         char* end_label = new_label();
         printf("%s:\n", start_label);
@@ -132,29 +144,30 @@ statement
         printf(":= %s\n", start_label);
         printf("%s:\n", end_label);
     }
-    | DO BEGINLOOP statements ENDLOOP WHILE bool_expr SEMICOLON {
+    | DO BEGINLOOP statements ENDLOOP WHILE bool_expr
+    {
         char* start_label = new_label();
         printf("%s:\n", start_label);
         // statements
         printf("?:= %s, %s\n", $6, start_label);
     }
-    | FOREACH IDENTIFIER IN IDENTIFIER BEGINLOOP statements ENDLOOP opt_semi {
-        // No MIL for foreach for now
-    }
-    | READ vars SEMICOLON {
+
+    | READ vars{
         // assume vars is a single var for now
         printf(".< %s\n", $2);
     }
-    | WRITE vars SEMICOLON {
+    | WRITE vars{
         printf("> %s\n", $2);
     }
-    | CONTINUE SEMICOLON {
+    | CONTINUE{
         printf("continue\n");
     }
-    | RETURN expression SEMICOLON {
+    | RETURN expression{
         printf("ret %s\n", $2);
     }
     ;
+
+
 opt_semi: /* empty */
         | SEMICOLON
         ;
@@ -334,13 +347,20 @@ expressions
     }
     ;
 
+
 %%
 
 int main(int argc, char **argv) {
+    if(argc > 1){
+        yyin = fopen(argv[1], "r");
+        if(yyin == NULL){
+            printf("syntax %s filename", argv[0]
+        }
+    }
     yyparse();
     return 0;
 }
 
-void yyerror(const char *msg) {
-    printf("Syntax error at line %d: %s\n", yylineno, msg);
+void yyerror(const char *msg){
+    printf("Error: Line %d, position %d: %s \n", num_lines, num_column, msg);
 }
